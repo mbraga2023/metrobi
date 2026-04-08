@@ -1,0 +1,41 @@
+{
+  "name": "metrobi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "cy:headless": "cypress run --browser chrome --headless",
+    "cy:electron": "cypress run --browser electron --headless",
+    "test": "npm run cy:headless",
+    "report": "node report.js",
+    "pdf": "node pdf.js",
+    "test:full": "npm run cy:headless && node report.js && node pdf.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mbraga2023/metrobi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mbraga2023/metrobi/issues"
+  },
+  "homepage": "https://github.com/mbraga2023/metrobi#readme",
+  "devDependencies": {
+    "@badeball/cypress-cucumber-preprocessor": "^24.0.1",
+    "@bahmutov/cypress-esbuild-preprocessor": "^2.2.8",
+    "cypress": "^15.13.1",
+    "cypress-xpath": "^2.0.1",
+    "esbuild": "^0.28.0",
+    "multiple-cucumber-html-reporter": "^3.10.0",
+    "puppeteer": "^24.40.0"
+  },
+  "dependencies": {
+    "pdfkit": "^0.18.0",
+    "xpath": "^0.0.34"
+  }
+}
