@@ -5,8 +5,13 @@ const { createEsbuildPlugin } = require("@badeball/cypress-cucumber-preprocessor
 const fs = require("fs");
 const path = require("path");
 const PDFDocument = require("pdfkit");
+require("dotenv").config();
 
 module.exports = defineConfig({
+  env: {
+    USERNAME: process.env.USER,
+    PASSWORD: process.env.PASSWORD,
+  },
   e2e: {
     specPattern: "cypress/e2e/**/*.feature",
     experimentalSessionAndOrigin: true,
@@ -20,6 +25,7 @@ module.exports = defineConfig({
           plugins: [createEsbuildPlugin(config)],
         })
       );
+
 
       // Merge all tasks here
       on("task", {

@@ -1,8 +1,14 @@
-class LoginPage {
+import { PageBase } from "./PageBase";
+class LoginPage extends PageBase {
     inputUser = '//*[@id="root"]/div/div/div[1]/div[2]/div[3]/div/div/input';
     inputPassword = '//*[@id="root"]/div/div/div[1]/div[2]/div[4]/div/div/input';
     btnLogin = '(//button[contains(text(), "Sign in")])';
     ttlDashboard = '(//h2[contains(text(), "create your first delivery")])';
+    btnTextForgorPass = 'Forgot password?'
+    ttlForgotPass = '(//h2[contains(text(), "Forgot password?")])';
+    btnTextLoginWithPhone = 'Log in with phone number';
+    ttlLoginWithPhone = '(//h4[contains(text(), "Enter your phone number")])';
+    btnTextRegister = 'Join for FREE';
 
     enterCredentials(username, password) {
         cy.xpath(this.inputUser).type(username);
@@ -17,8 +23,6 @@ class LoginPage {
     }
 
     enterCredentialsWithInvalidData(username, password) {
-        cy.log('username: ' + username);
-        cy.log('password: ' + password);
 
         // Type username if not empty
         if (username !== "") {
@@ -48,6 +52,55 @@ class LoginPage {
             cy.contains("body", errorMessage, { timeout: 20000 }).should("be.visible");
         }
         cy.takeScreenshot(`Printing error message: ${errorMessage}`);
+    }
+
+    clickLink(CTA) {
+        if (CTA === "forgot-password") {
+            this.clickButton(this.btnTextForgorPass);
+        } else if (CTA === "login-with-phone") {
+            this.clickButton(this.btnTextLoginWithPhone);
+        } else if (CTA === "register") {
+
+            this.clickButton(this.btnTextRegister);
+            cy.wait(2000)
+
+        }
+    }
+
+    validateRedirection(confirmationPage, expectedUrl) {
+        if (confirmationPage === "Forgot Password Page") {
+            cy.url({ timeout: 10000 }).should("include", expectedUrl);
+            cy.xpath(this.ttlForgotPass, { timeout: 20000 }).should("be.visible");
+            cy.takeScreenshot(`after-redirection-to-${confirmationPage}`);
+
+        } else if (confirmationPage === "Login with Phone Page") {
+            cy.xpath(this.ttlLoginWithPhone, { timeout: 20000 }).should("be.visible");
+            cy.wait(2000); // wait for potential redirects or page loads
+            cy.takeScreenshot(`after-redirection-to-${confirmationPage}`);
+
+        } else if (confirmationPage === "Register Page") {
+            // All commands on metrobi.com must be inside cy.origin
+            cy.origin(
+                "https://metrobi.com",
+                { args: { expectedUrl, confirmationPage } },
+                ({ expectedUrl, confirmationPage }) => {
+                    cy.url({ timeout: 15000 }).should("include", expectedUrl);
+
+                    // Optional wait to ensure full page load (can adjust or remove if unnecessary)
+                    cy.wait(2000);
+
+                    // Screenshot inside origin context
+                    cy.screenshot(`after-redirection-to-${confirmationPage}`, {
+                        capture: "fullPage",
+                        overwrite: true,
+                    });
+
+                    // You can log info if you want
+                    cy.task("log", `Screenshot taken for ${confirmationPage}`);
+                }
+            );
+        }
+
     }
 }
 

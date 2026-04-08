@@ -6,8 +6,8 @@ Given("I access Metrobi login page", () => {
 });
 
 When("I enter valid credentials", () => {
-    const username = "michel.diener@gmail.com";
-    const password = "michel99";
+    const username = Cypress.env('USERNAME');
+    const password = Cypress.env("PASSWORD");
     LoginPage.enterCredentials(username, password);
 });
 
@@ -43,3 +43,29 @@ Then("I enter invalid credentials {string}", (invalidInfo) => {
 Then("I should see an error message {string}", (errorMessage) => {
     LoginPage.validateErrorMessage(errorMessage);
 });
+
+Then("click in link {string}", (CTA) => {
+    if (CTA === 'register') {
+        cy.window().then((win) => {
+            cy.stub(win, "open").callsFake((url) => {
+                win.location.href = url;
+            });
+        });
+        LoginPage.clickLink(CTA);
+        cy.origin("https://metrobi.com", () => {
+            cy.location("href", { timeout: 20000 }).should((href) => {
+                expect(href).to.match(/metrobi\.com/);
+                expect(href).to.match(/(v1|v3)/); // handles both versions
+            });
+        });
+
+    } else {
+        LoginPage.clickLink(CTA);
+    }
+
+
+});
+
+Then("I should redirect to {string} {string}", (confirmationPage, expectedUrl) => {
+    LoginPage.validateRedirection(confirmationPage, expectedUrl);
+})

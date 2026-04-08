@@ -1,19 +1,33 @@
 Feature: Login
 
-  # Scenario: Successful login with valid credentials
-  #   Given I access Metrobi login page
-  #   When I enter valid credentials
-  #   Then I should be redirected to the dashboard
+  Scenario: Successful login with valid credentials - '<Test-Id>'
+    Given I access Metrobi login page
+    When I enter valid credentials
+    Then I should be redirected to the dashboard
+        Examples:
+      | Test-Id | wrongInfo           | errorMessage                             |
+      # | TST-001 | invalid-email       | Please enter a valid email address       |
 
-  Scenario Outline: Login with invalid credentials '<wrongInfo>'
+  Scenario Outline: Validate Login with invalid credentials '<wrongInfo>' - '<Test-Id>'
     Given I access Metrobi login page
     When I enter invalid credentials '<wrongInfo>'
     Then I should see an error message '<errorMessage>'
 
     Examples:
-      | wrongInfo           | errorMessage                             |
-      | invalid-email  | Please enter a valid email address       |
-      | invalidCharacters   | Password must have at least 6 characters |
-      | empty email         |           |
-      | empty password      |                |
-      # | wrongEmail       | Sorry, wrong credentials                 |
+      # | Test-Id | wrongInfo           | errorMessage                             |
+      # | TST-002 | invalid-email       | Please enter a valid email address       |
+      # | TST-003 | invalidCharacters   | Password must have at least 6 characters |
+      # | TST-004 | empty email         |                                          |
+      # | TST-005 | empty password      |                                          |
+      # | TST-006 | wrongEmail         | Sorry, wrong credentials                 |
+
+        Scenario Outline: Validate Login links '<confirmationPage>' - '<Test-Id>'
+    Given I access Metrobi login page
+    When click in link '<CTA>'
+    Then I should redirect to '<confirmationPage>' '<expectedUrl>'
+
+    Examples:
+      | Test-Id | CTA               | confirmationPage       | expectedUrl |
+      | TST-007 | forgot-password | Forgot Password Page    | reset-password |
+      | TST-008 | login-with-phone  | Login with Phone Page  | signin     |
+      | TST-009 | register         |   Register Page         | register |     

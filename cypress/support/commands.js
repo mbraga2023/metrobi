@@ -1,8 +1,11 @@
 Cypress.Commands.add("takeScreenshot", (name) => {
-    // Take screenshot with the given name
-    cy.screenshot(name);
+    const safeName = name.replace(/[\/\\?%*:|"<>]/g, "-").replace(/\s+/g, "-");
 
-    // Attach screenshot info to the current test for the Cucumber HTML report
-    cy.task("log", `Screenshot taken: ${name}.png`);
+    cy.then(() => {
+        cy.screenshot(safeName, {
+            overwrite: true,
+            disableTimersAndAnimations: false
+        });
+        cy.task("log", `Screenshot taken: ${safeName}.png`);
+    });
 });
-
