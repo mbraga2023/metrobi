@@ -3,47 +3,52 @@ import "cypress-xpath";
 
 Cypress.on("uncaught:exception", (err) => {
     if (err.message.includes("postMessage")) {
-        return false; // prevent Cypress from failing the test
+        return false;
     }
 });
 
-before(() => {
-    cy.clearCookies();
-    cy.clearLocalStorage();
+beforeEach(() => {
+    cy.clearAllCookies();
+    cy.clearAllLocalStorage();
+    cy.clearAllSessionStorage();
     cy.window().then((win) => {
         win.sessionStorage.clear();
-    })
-})
-
-afterEach(() => {
-    cy.url().then((url) => {
-        const origin = new URL(url).origin;
-        const clearStorage = () => {
-            cy.clearCookies();
-            cy.clearLocalStorage();
-            cy.window().then((win) => {
-                win.sessionStorage.clear();
-            });
-        };
-
-        if (origin === 'https://metrobi.com') {
-            cy.origin('https://metrobi.com', clearStorage);
-        } else {
-            clearStorage();
-        }
+        win.sessionStorage.setItem("cypress-session", "true");
     });
 });
 
-after(() => {
-    cy.location("origin").then((origin) => {
-        if (origin.includes("metrobi.com")) {
-            cy.origin("https://metrobi.com", () => {
-                cy.clearCookies();
-                cy.clearLocalStorage();
-            });
-        } else {
+afterEach(function () {
+
+    const test = this.currentTest;
+    if (!test) return;
+
+    const testName = (test.title || "unknown-test")
+        .replace(/[\/\\?%*:|"<>]/g, "-")
+        .replace(/\s+/g, "-")
+        .replace(/\(.*?\)$/g, "").trim();
+
+    const status = test.state;
+
+    cy.wait(500);
+
+    cy.then(() => {
+        cy.task("generateTestPDF", { testName, status });
+    });
+
+    // ❗ DO NOT CHANGE (your logic preserved)
+    cy.url().then((url) => {
+        const origin = new URL(url).origin;
+
+        const clearStorage = () => {
             cy.clearCookies();
             cy.clearLocalStorage();
+            cy.window().then((win) => win.sessionStorage.clear());
+        };
+
+        if (origin === "https://metrobi.com") {
+            cy.origin("https://metrobi.com", clearStorage);
+        } else {
+            clearStorage();
         }
     });
 });

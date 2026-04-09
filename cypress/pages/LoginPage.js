@@ -18,8 +18,15 @@ class LoginPage extends PageBase {
     }
 
     validateDashboard() {
-        cy.xpath(this.ttlDashboard, { timeout: 20000 }).should("be.visible");
+        cy.url({ timeout: 20000 }).should("include", "/dispatch");
         cy.takeScreenshot("after-login");
+    }
+
+    validateLoggedHomePage(confirmationPage) {
+        if (confirmationPage === "Logged HomePage") {
+            cy.xpath(this.ttlDashboard, { timeout: 20000 }).should("be.visible");
+            cy.takeScreenshot("Dashboard-Visible");
+        }
     }
 
     enterCredentialsWithInvalidData(username, password) {
@@ -42,6 +49,7 @@ class LoginPage extends PageBase {
             cy.log('Should display error snackbar');
         } else {
             cy.log('Login button not clicked due to missing fields');
+            cy.takeScreenshot("login-attempt-with-missing-fields");
         }
 
         cy.takeScreenshot("after-invalid-login");
@@ -56,14 +64,15 @@ class LoginPage extends PageBase {
 
     clickLink(CTA) {
         if (CTA === "forgot-password") {
+            cy.takeScreenshot("clicking-forgot-password");
             this.clickButton(this.btnTextForgorPass);
         } else if (CTA === "login-with-phone") {
+            cy.takeScreenshot("clicking-login-with-phone");
             this.clickButton(this.btnTextLoginWithPhone);
         } else if (CTA === "register") {
-
+            cy.takeScreenshot("clicking-register");
             this.clickButton(this.btnTextRegister);
             cy.wait(2000)
-
         }
     }
 
@@ -77,7 +86,6 @@ class LoginPage extends PageBase {
             cy.xpath(this.ttlLoginWithPhone, { timeout: 20000 }).should("be.visible");
             cy.wait(2000); // wait for potential redirects or page loads
             cy.takeScreenshot(`after-redirection-to-${confirmationPage}`);
-
         } else if (confirmationPage === "Register Page") {
             // All commands on metrobi.com must be inside cy.origin
             cy.origin(
@@ -85,17 +93,11 @@ class LoginPage extends PageBase {
                 { args: { expectedUrl, confirmationPage } },
                 ({ expectedUrl, confirmationPage }) => {
                     cy.url({ timeout: 15000 }).should("include", expectedUrl);
-
-                    // Optional wait to ensure full page load (can adjust or remove if unnecessary)
                     cy.wait(2000);
-
-                    // Screenshot inside origin context
                     cy.screenshot(`after-redirection-to-${confirmationPage}`, {
                         capture: "fullPage",
                         overwrite: true,
                     });
-
-                    // You can log info if you want
                     cy.task("log", `Screenshot taken for ${confirmationPage}`);
                 }
             );

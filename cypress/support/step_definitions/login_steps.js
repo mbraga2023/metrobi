@@ -5,14 +5,23 @@ Given("I access Metrobi login page", () => {
     cy.visit("https://test-deliver.metrobi.com");
 });
 
-When("I enter valid credentials", () => {
-    const username = Cypress.env('USERNAME');
-    const password = Cypress.env("PASSWORD");
-    LoginPage.enterCredentials(username, password);
+When("I enter valid credentials {string}", (credentials) => {
+    if (credentials === "valid-user") {
+        const username = Cypress.env('USERNAME');
+        const password = Cypress.env("PASSWORD");
+        LoginPage.enterCredentials(username, password);
+    } else {
+        cy.log('Invalid credentials provided, skipping login attempt');
+        return false
+    }
 });
 
 Then("I should be redirected to the dashboard", () => {
     LoginPage.validateDashboard();
+});
+
+Then("I should see the message {string}", (confirmationPage) => {
+    LoginPage.validateLoggedHomePage(confirmationPage);
 });
 
 Then("I enter invalid credentials {string}", (invalidInfo) => {

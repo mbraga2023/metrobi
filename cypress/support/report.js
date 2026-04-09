@@ -1,16 +1,7 @@
 const report = require("multiple-cucumber-html-reporter");
+const timestamp = require("../utils/timestamp");
 
 report.generate({
     jsonDir: "cypress/reports",
-    reportPath: "cypress/reports/html",
-    metadata: {
-        browser: {
-            name: "chrome",
-            version: "latest",
-        },
-        device: "Local test machine",
-        platform: {
-            name: "macOS / Windows",
-        },
-    },
+    reportPath: `cypress/reports/html-${timestamp}`,
 });
