@@ -23,6 +23,7 @@ module.exports = defineConfig({
     viewportHeight: 720,
     video: false,
     chromeWebSecurity: false,
+    testIsolation: true,
 
 
     async setupNodeEvents(on, config) {

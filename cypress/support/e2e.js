@@ -11,9 +11,26 @@ beforeEach(() => {
     cy.clearAllCookies();
     cy.clearAllLocalStorage();
     cy.clearAllSessionStorage();
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
         win.sessionStorage.clear();
-        win.sessionStorage.setItem("cypress-session", "true");
+
+        // 🔥 clear IndexedDB
+        if (win.indexedDB.databases) {
+            const dbs = await win.indexedDB.databases();
+            for (const db of dbs) {
+                win.indexedDB.deleteDatabase(db.name);
+            }
+        }
+
+        // 🔥 clear Cache Storage
+        if ("caches" in win) {
+            const keys = await win.caches.keys();
+            await Promise.all(keys.map((k) => win.caches.delete(k)));
+        }
+        cy.window().then((win) => {
+            win.sessionStorage.clear();
+            win.sessionStorage.setItem("cypress-session", "true");
+        });
     });
 });
 

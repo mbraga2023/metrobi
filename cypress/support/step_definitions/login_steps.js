@@ -24,6 +24,10 @@ Then("I should see the message {string}", (confirmationPage) => {
     LoginPage.validateLoggedHomePage(confirmationPage);
 });
 
+Then("logout of the application", () => {
+    LoginPage.logout();
+});
+
 Then("I enter invalid credentials {string}", (invalidInfo) => {
     let username = "";
     let password = "";

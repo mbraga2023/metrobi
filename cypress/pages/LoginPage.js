@@ -9,6 +9,7 @@ class LoginPage extends PageBase {
     btnTextLoginWithPhone = 'Log in with phone number';
     ttlLoginWithPhone = '(//h4[contains(text(), "Enter your phone number")])';
     btnTextRegister = 'Join for FREE';
+    btnLogout = '#root > div > nav > div > div > div.MuiBox-root.css-1hsaxtb > div.MuiBox-root.css-0 > a'
 
     enterCredentials(username, password) {
         cy.xpath(this.inputUser).type(username);
@@ -27,6 +28,10 @@ class LoginPage extends PageBase {
             cy.xpath(this.ttlDashboard, { timeout: 20000 }).should("be.visible");
             cy.takeScreenshot("Dashboard-Visible");
         }
+    }
+
+    logout() {
+        cy.get(this.btnLogout).click();
     }
 
     enterCredentialsWithInvalidData(username, password) {
